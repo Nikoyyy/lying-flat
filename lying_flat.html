@@ -500,15 +500,15 @@
                 <label for="monthlyExpense" style="font-size: 1.1em;">平均月支出 (万元): <span class="value-display" id="monthlyExpenseValue">0.2</span></label>
                 <div class="input-container">
                     <input type="range" id="monthlyExpense" min="0.01" max="5" step="0.01" value="0.2">
-                    <input type="number" id="monthlyExpenseNum" min="0.01" max="5" step="0.01" value="0.2">
+                    <input type="number" id="monthlyExpenseNum" min="0.01" max="1000" step="0.01" value="0.2">
                 </div>
             </div>
 
             <div class="param-group">
                 <label for="inflationRate" style="font-size: 1.1em;">通胀率 (年化): <span class="value-display" id="inflationRateValue">2%</span></label>
                 <div class="input-container">
-                    <input type="range" id="inflationRate" min="0" max="10" step="0.1" value="2">
-                    <input type="number" id="inflationRateNum" min="0" max="10" step="0.1" value="2">
+                    <input type="range" id="inflationRate" min="0" max="20" step="0.1" value="2">
+                    <input type="number" id="inflationRateNum" min="0" max="100" step="0.1" value="2">
                 </div>
             </div>
 
@@ -516,14 +516,14 @@
                 <label for="savingsReturnRate" style="font-size: 1.1em;">存款年化收益率 : <span class="value-display" id="savingsReturnRateValue">1%</span></label>
                 <div class="input-container">
                     <input type="range" id="savingsReturnRate" min="0" max="20" step="0.1" value="1">
-                    <input type="number" id="savingsReturnRateNum" min="0" max="20" step="0.1" value="1">
+                    <input type="number" id="savingsReturnRateNum" min="0" max="1000" step="0.1" value="1">
                 </div>
             </div>
 
             <div class="param-group">
                 <label for="initialSavings" style="font-size: 1.1em;">当前存款 (万元): <span class="value-display" id="initialSavingsValue">10.0</span></label>
                 <div class="input-container">
-                    <input type="range" id="initialSavings" min="0" max="1000" step="0.1" value="10">
+                    <input type="range" id="initialSavings" min="0" max="200" step="0.1" value="10">
                     <input type="number" id="initialSavingsNum" min="0" max="1000" step="0.1" value="10.0">
                 </div>
             </div>
@@ -531,7 +531,7 @@
             <div class="param-group">
                 <label for="salaryGrowthRate" style="font-size: 1.1em;">年薪增长率 (年化): <span class="value-display" id="salaryGrowthRateValue">1%</span></label>
                 <div class="input-container">
-                    <input type="range" id="salaryGrowthRate" min="0" max="100" step="0.1" value="1">
+                    <input type="range" id="salaryGrowthRate" min="0" max="20" step="0.1" value="1">
                     <input type="number" id="salaryGrowthRateNum" min="0" max="100" step="0.1" value="1">
                 </div>
             </div>
@@ -548,7 +548,7 @@
                 <label for="lyingFlatStart" style="font-size: 1.1em;">计划躺平年龄 (最早): <span class="value-display" id="lyingFlatStartValue">30</span></label>
                 <div class="input-container">
                     <input type="range" id="lyingFlatStart" min="20" max="70" step="1" value="30">
-                    <input type="number" id="lyingFlatStartNum" min="20" max="70" step="1" value="30">
+                    <input type="number" id="lyingFlatStartNum" min="20" max="100" step="1" value="30">
                 </div>
             </div>
 
@@ -556,7 +556,7 @@
                 <label for="lyingFlatEnd" style="font-size: 1.1em;">计划躺平年龄 (最晚): <span class="value-display" id="lyingFlatEndValue">60</span></label>
                 <div class="input-container">
                     <input type="range" id="lyingFlatEnd" min="20" max="70" step="1" value="60">
-                    <input type="number" id="lyingFlatEndNum" min="20" max="70" step="1" value="60">
+                    <input type="number" id="lyingFlatEndNum" min="20" max="100" step="1" value="60">
                 </div>
             </div>
 
@@ -564,7 +564,7 @@
                 <label for="monthlyPension" style="font-size: 1.1em;">退休金 (万元/月): <span class="value-display" id="monthlyPensionValue">0.00</span></label>
                 <div class="input-container">
                     <input type="range" id="monthlyPension" min="0" max="5" step="0.01" value="0">
-                    <input type="number" id="monthlyPensionNum" min="0" max="5" step="0.01" value="0.00">
+                    <input type="number" id="monthlyPensionNum" min="0" max="10" step="0.01" value="0.00">
                 </div>
             </div>
 
@@ -992,32 +992,39 @@
                 let value = parseFloat(numElem.value);
                 const min = parseFloat(sliderElem.min);
                 const max = parseFloat(sliderElem.max);
-                if (isNaN(value)) value = min;
-                if (value < min) value = min;
-                if (value > max) value = max;
-                
-                sliderElem.value = value; // Update slider position
-                
-                if (numElem.id === 'inflationRateNum' || numElem.id === 'savingsReturnRateNum' || numElem.id === 'salaryGrowthRateNum') {
-                    // For these, value might be 2.0, 2.5. toString() handles this well.
+
+                // If NaN, default to the slider's min value
+                if (isNaN(value)) {
+                    value = min;
+                }
+
+                // *** REMOVED CLAMPING LOGIC based on slider min/max ***
+                // The number input can now accept values outside the slider's visual range.
+
+                // Update slider position (it will visually clamp, but its internal value will be set)
+                sliderElem.value = value;
+
+                // Update display element
+                if (sliderElem.id === 'inflationRate' || sliderElem.id === 'savingsReturnRate' || sliderElem.id === 'salaryGrowthRate') {
                     displayElem.textContent = value.toString() + '%';
-                    numElem.value = value.toString(); // Update num input to reflect validated/clamped value
                 } else {
-                    // For other inputs, format with precision
-                    numElem.value = isFloat ? value.toFixed(precision) : value.toString();
+                    // Use the parsed value for display, formatted
                     displayElem.textContent = isFloat ? value.toFixed(precision) : value.toString();
                 }
 
+                // Update number input element itself (format it)
+                // Use the parsed value for the number input's value, formatted
+                numElem.value = isFloat ? value.toFixed(precision) : value.toString();
 
                 if (numElem.id === 'lyingFlatStartNum') {
-                    const endVal = parseFloat(controls.lyingFlatEnd.value);
+                    const endVal = parseFloat(controls.lyingFlatEndNum.value); // Use the value from the *other* number input
                     if (value > endVal) {
                         controls.lyingFlatEnd.value = value;
                         controls.lyingFlatEndNum.value = value; // Update the other number input
                         controls.lyingFlatEndValue.textContent = value.toString(); // Update its display
                     }
                 } else if (numElem.id === 'lyingFlatEndNum') {
-                     const startVal = parseFloat(controls.lyingFlatStart.value);
+                     const startVal = parseFloat(controls.lyingFlatStartNum.value); // Use the value from the *other* number input
                      if (value < startVal) {
                         controls.lyingFlatStart.value = value;
                         controls.lyingFlatStartNum.value = value; // Update the other number input
@@ -1510,7 +1517,9 @@
                     } else if (key === 'pensionInflationAdjusted') {
                          params[key] = controls[key].checked;
                     } else if (controls[key] && controls[`${key}Value`] && controls[`${key}Num`]) { // Check for associated display/num elements
-                        params[key] = parseFloat(controls[key].value);
+                        // When gathering params for calculation, always use the value from the number input
+                        // as per the new requirement, as it's the "standard" if outside slider range.
+                        params[key] = parseFloat(controls[`${key}Num`].value);
                     } else if (controls[key] && controls[key].tagName === 'INPUT' && controls[key].type === 'checkbox') { // Handle standalone checkboxes if any
                          params[key] = controls[key].checked;
                     }
