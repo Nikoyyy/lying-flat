@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>躺平财务规划计算器</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0; /* Remove body padding, handle spacing in container */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden; /* Prevent horizontal scroll on body */
+        }
+
+        .container {
+            background-color: #2b2b2b;
+            width: 100%;
+            max-width: 100vw; /* Ensure container doesn't exceed viewport width */
+            padding: 20px; /* Add padding inside the container */
+            box-sizing: border-box;
+            display: grid;
+            gap: 20px;
+            /* Default: single column for portrait or smaller screens */
+            grid-template-columns: 1fr;
+        }
+
+        /* Applied by JavaScript when window.innerWidth > window.innerHeight */
+        .container.layout-landscape {
+            grid-template-columns: 1fr 2fr; /* Controls take 1 part, Results take 2 parts */
+            padding: 30px;
+            border-radius: 12px; /* Optional: add radius for landscape */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Optional: add shadow for landscape */
+        }
+        
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            text-align: center;
+            grid-column: 1 / -1; /* Span across all columns in the grid */
+        }
+        
+        .intro {
+            font-size: 1.0em;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #b0b0b0;
+            grid-column: 1 / -1; /* Span across all columns in the grid */
+        }
+
+        .controls, .results {
+            background-color: #3a3a3a;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden; /* Prevent content from breaking out of these boxes */
+        }
+        
+        .controls h2, .results h2 {
+             color: #90CAF9;
+             margin-bottom: 15px;
+             border-bottom: 1px solid #555;
+             padding-bottom: 10px;
+        }
+        /* Removed .results h3 style as the h3 is removed */
+
+        /* Style for the parameter summary */
+        .parameter-summary {
+            background-color: #444;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px; /* Add space below the summary */
+            font-size: 1em; /* Keep font size relatively small */
+            line-height: 1.6;
+            color: #ccc; /* Parameter description color */
+            /* Ensure summary itself doesn't overflow */
+            overflow-x: hidden; 
+            word-wrap: break-word; /* Allow long words to break */
+        }
+        .parameter-summary strong {
+            color: #FFD700; /* Highlight key values */
+        }
+
+
+        .param-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .param-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #90CAF9;
+            font-size: 0.9em;
+        }
+        
+        .param-group .input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .param-group input[type="range"] {
+            flex-grow: 1;
+            min-width: 50px; /* Prevent range input from becoming too small */
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #555;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        .param-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        .param-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        .param-group input[type="number"], .param-group input[type="text"] {
+            background-color: #2b2b2b;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 8px;
+            width: 80px;
+            text-align: right;
+            box-sizing: border-box;
+        }
+        .param-group input[type="text"] {
+            width: auto;
+            flex-grow: 1;
+        }
+         .param-group .value-display {
+            min-width: 40px; 
+            text-align: left;
+            color: #FFD700;
+         }
+
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .checkbox-group label {
+            margin-left: 8px;
+            color: #90CAF9;
+            font-weight: normal;
+        }
+         .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4CAF50;
+         }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.0em;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #5cb85c;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.destructive {
+            background-color: #f44336;
+        }
+        button.destructive:hover {
+            background-color: #e57373;
+        }
+        button.outline {
+            background-color: transparent;
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+        button.outline:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .chart-container {
+            background-color: #444;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            position: relative; /* Important for Chart.js responsiveness */
+            height: 400px; 
+        }
+        
+        /* Adjust chart height in landscape mode if needed, or make it more dynamic */
+        .container.layout-landscape .chart-container {
+             height: 500px;
+        }
+
+
+        canvas {
+            display: block; /* Essential for Chart.js responsive behavior */
+            width: 100%;    /* Let Chart.js determine canvas width/height attributes */
+            height: 100%;   /* based on parent container's CSS dimensions */
+            max-width: 100%; /* Safety net */
+        }
+        
+        .extra-expense-item {
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #444;
+        }
+        .extra-expense-item h4 {
+            color: #FFD700;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        .extra-expense-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Allow more flexible wrapping */
+            gap: 10px;
+            align-items: end; 
+        }
+        .extra-expense-inputs .param-group {
+            margin-bottom: 0;
+        }
+         .extra-expense-inputs input[type="number"], .extra-expense-inputs input[type="text"]{
+            width: 100%; 
+            box-sizing: border-box;
+         }
+        .extra-expense-item button.destructive {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            height: 38px; 
+            align-self: end; 
+        }
+        .info-text {
+            font-size: 0.8em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .results-table-container {
+            margin-top: 30px;
+            overflow-x: auto; 
+            background-color: #3a3a3a; 
+            padding: 1px; 
+            border-radius: 8px; 
+        }
+        /* Removed specific style for .results-table-container .parameter-summary */
+        
+        .results-table {
+            width: 100%;
+            min-width: 800px; 
+            border-collapse: collapse;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #555;
+            padding: 10px 12px;
+            text-align: center;
+            font-size: 0.9em;
+            white-space: nowrap; 
+        }
+        .results-table th {
+            background-color: #444; 
+            color: #90CAF9; 
+            font-weight: bold;
+        }
+        .results-table td {
+            color: #e0e0e0;
+        }
+        .results-table tr:nth-child(even) td {
+            background-color: #3f3f3f; 
+        }
+         .results-table td.unachievable {
+             color: #ff9800; 
+             font-style: italic;
+         }
+
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer"> 
+        <h1>💰 躺平财务规划计算器 📈</h1>
+        <p class="intro">
+            调整以下参数，计算不同躺平年龄所需的财务准备和初始薪资要求。结果将以图表和表格形式展示。
+        </p>
+
+        <div class="controls">
+            <h2>参数设置</h2>
+            <div style="margin-top: 20px; margin-bottom: 20px;">
+                <button type="button" class="computeBtn">计算</button>
+                <button type="button" class="resetBtn destructive">重置参数</button>
+            </div>
+            <div class="param-group">
+                <label for="workStartAge" style="font-size: 1.1em;">当前年龄: <span class="value-display" id="workStartAgeValue">26</span></label>
+                <div class="input-container">
+                    <input type="range" id="workStartAge" min="18" max="60" step="1" value="26">
+                    <input type="number" id="workStartAgeNum" min="18" max="60" step="1" value="26">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="maxAge" style="font-size: 1.1em;">寿命终点: <span class="value-display" id="maxAgeValue">75</span></label>
+                <div class="input-container">
+                    <input type="range" id="maxAge" min="50" max="120" step="1" value="75">
+                    <input type="number" id="maxAgeNum" min="50" max="120" step="1" value="75">
+                </div>
+            </div>
+            
+            <div class="param-group">
+                <label for="monthlyExpense" style="font-size: 1.1em;">平均月支出 (万元): <span class="value-display" id="monthlyExpenseValue">0.2</span></label>
+                <div class="input-container">
+                    <input type="range" id="monthlyExpense" min="0.01" max="5" step="0.01" value="0.2">
+                    <input type="number" id="monthlyExpenseNum" min="0.01" max="5" step="0.01" value="0.2">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="inflationRate" style="font-size: 1.1em;">通胀率 (年化): <span class="value-display" id="inflationRateValue">2%</span></label>
+                <div class="input-container">
+                    <input type="range" id="inflationRate" min="0" max="10" step="0.1" value="2">
+                    <input type="number" id="inflationRateNum" min="0" max="10" step="0.1" value="2">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="savingsReturnRate" style="font-size: 1.1em;">存款年化收益率 : <span class="value-display" id="savingsReturnRateValue">1%</span></label>
+                <div class="input-container">
+                    <input type="range" id="savingsReturnRate" min="0" max="20" step="0.1" value="1">
+                    <input type="number" id="savingsReturnRateNum" min="0" max="20" step="0.1" value="1">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="initialSavings" style="font-size: 1.1em;">当前存款 (万元): <span class="value-display" id="initialSavingsValue">10.0</span></label>
+                <div class="input-container">
+                    <input type="range" id="initialSavings" min="0" max="1000" step="0.1" value="10">
+                    <input type="number" id="initialSavingsNum" min="0" max="1000" step="0.1" value="10.0">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="salaryGrowthRate" style="font-size: 1.1em;">年薪增长率 (年化): <span class="value-display" id="salaryGrowthRateValue">1%</span></label>
+                <div class="input-container">
+                    <input type="range" id="salaryGrowthRate" min="0" max="100" step="0.1" value="1">
+                    <input type="number" id="salaryGrowthRateNum" min="0" max="100" step="0.1" value="1">
+                </div>
+            </div>
+            
+            <div class="param-group">
+                <label for="retirementAge" style="font-size: 1.1em;">退休年龄: <span class="value-display" id="retirementAgeValue">67</span></label>
+                <div class="input-container">
+                    <input type="range" id="retirementAge" min="50" max="80" step="1" value="67">
+                    <input type="number" id="retirementAgeNum" min="50" max="80" step="1" value="67">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="lyingFlatStart" style="font-size: 1.1em;">计划躺平年龄 (最早): <span class="value-display" id="lyingFlatStartValue">30</span></label>
+                <div class="input-container">
+                    <input type="range" id="lyingFlatStart" min="20" max="70" step="1" value="30">
+                    <input type="number" id="lyingFlatStartNum" min="20" max="70" step="1" value="30">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="lyingFlatEnd" style="font-size: 1.1em;">计划躺平年龄 (最晚): <span class="value-display" id="lyingFlatEndValue">60</span></label>
+                <div class="input-container">
+                    <input type="range" id="lyingFlatEnd" min="20" max="70" step="1" value="60">
+                    <input type="number" id="lyingFlatEndNum" min="20" max="70" step="1" value="60">
+                </div>
+            </div>
+
+            <div class="param-group">
+                <label for="monthlyPension" style="font-size: 1.1em;">退休金 (万元/月): <span class="value-display" id="monthlyPensionValue">0.00</span></label>
+                <div class="input-container">
+                    <input type="range" id="monthlyPension" min="0" max="5" step="0.01" value="0">
+                    <input type="number" id="monthlyPensionNum" min="0" max="5" step="0.01" value="0.00">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="pensionInflationAdjusted">
+                <label for="pensionInflationAdjusted">退休金跟随通胀增长</label>
+            </div>
+
+            <div id="extraExpensesSection">
+                <h3>额外支出项</h3>
+                <div id="extraExpensesContainer">
+                    <!-- Extra expense items will be added here -->
+                </div>
+                <button type="button" id="addExtraExpenseBtn" class="outline">添加额外支出项</button>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="button" class="computeBtn">计算</button>
+                <button type="button" class="resetBtn destructive">重置参数</button>
+            </div>
+        </div>
+
+        <div class="results">
+            <h2>规划结果概览</h2>
+            
+            <!-- Parameter Summary Section (Above Chart) -->
+            <div class="parameter-summary" id="parameterSummary">
+                <!-- Parameter summary text will be inserted here by JavaScript -->
+            </div>
+
+            <div class="chart-container">
+                <canvas id="resultsChart"></canvas>
+            </div>
+             <p class="info-text" style="text-align: center; margin-top: 15px;">
+                图表展示了在不同"计划躺平年龄"下，您需要积累的"躺平时需存款"以及开始工作时所需的"最低年薪"。
+                如果某条曲线在某个年龄点中断，表示在该参数条件下，该年龄的规划目标无法达成。
+            </p>
+
+            <!-- Parameter Summary Section (Above Table) - Moved outside results-table-container -->
+            <div class="parameter-summary" id="tableParameterSummary" style="display: none; margin-top: 30px;">
+                <!-- Parameter summary text will be inserted here by JavaScript -->
+            </div>
+
+            <div class="results-table-container" id="resultsTableContainer" style="display: none;">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>躺平年龄</th>
+                            <th>躺平时需存款 (万元)</th>
+                            <th>最低月薪要求 (万元)</th>
+                            <th>最低年薪要求 (万元)</th>
+                            <th>工作期利息总收益 (万元)</th>
+                            <th>躺平期利息总收益 (万元)</th>
+                            <th>最后一年月薪 (万元)</th>
+                            <th>最后一年年薪 (万元)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Table rows will be generated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const mainContainer = document.getElementById('mainContainer');
+            // ... (all other const controls elements remain the same)
+             const defaultParams = {
+                workStartAge: 26,
+                maxAge: 75,
+                monthlyExpense: 0.2,
+                inflationRate: 2,
+                savingsReturnRate: 1,
+                initialSavings: 10,
+                salaryGrowthRate: 1,
+                lyingFlatStart: 30,
+                lyingFlatEnd: 60,
+                retirementAge: 67,
+                monthlyPension: 0,
+                pensionInflationAdjusted: false,
+                extraExpenses: []
+            };
+
+            const controls = {
+                workStartAge: document.getElementById('workStartAge'),
+                workStartAgeValue: document.getElementById('workStartAgeValue'),
+                workStartAgeNum: document.getElementById('workStartAgeNum'),
+                maxAge: document.getElementById('maxAge'),
+                maxAgeValue: document.getElementById('maxAgeValue'),
+                maxAgeNum: document.getElementById('maxAgeNum'),
+                monthlyExpense: document.getElementById('monthlyExpense'),
+                monthlyExpenseValue: document.getElementById('monthlyExpenseValue'),
+                monthlyExpenseNum: document.getElementById('monthlyExpenseNum'),
+                inflationRate: document.getElementById('inflationRate'),
+                inflationRateValue: document.getElementById('inflationRateValue'),
+                inflationRateNum: document.getElementById('inflationRateNum'),
+                savingsReturnRate: document.getElementById('savingsReturnRate'),
+                savingsReturnRateValue: document.getElementById('savingsReturnRateValue'),
+                savingsReturnRateNum: document.getElementById('savingsReturnRateNum'),
+                initialSavings: document.getElementById('initialSavings'),
+                initialSavingsValue: document.getElementById('initialSavingsValue'),
+                initialSavingsNum: document.getElementById('initialSavingsNum'),
+                salaryGrowthRate: document.getElementById('salaryGrowthRate'),
+                salaryGrowthRateValue: document.getElementById('salaryGrowthRateValue'),
+                salaryGrowthRateNum: document.getElementById('salaryGrowthRateNum'),
+                retirementAge: document.getElementById('retirementAge'),
+                retirementAgeValue: document.getElementById('retirementAgeValue'),
+                retirementAgeNum: document.getElementById('retirementAgeNum'),
+                lyingFlatStart: document.getElementById('lyingFlatStart'),
+                lyingFlatStartValue: document.getElementById('lyingFlatStartValue'),
+                lyingFlatStartNum: document.getElementById('lyingFlatStartNum'),
+                lyingFlatEnd: document.getElementById('lyingFlatEnd'),
+                lyingFlatEndValue: document.getElementById('lyingFlatEndValue'),
+                lyingFlatEndNum: document.getElementById('lyingFlatEndNum'),
+                monthlyPension: document.getElementById('monthlyPension'),
+                monthlyPensionValue: document.getElementById('monthlyPensionValue'),
+                monthlyPensionNum: document.getElementById('monthlyPensionNum'),
+                pensionInflationAdjusted: document.getElementById('pensionInflationAdjusted'),
+                extraExpensesContainer: document.getElementById('extraExpensesContainer'),
+                addExtraExpenseBtn: document.getElementById('addExtraExpenseBtn'),
+                computeBtn: document.querySelectorAll('.computeBtn'), // Use querySelectorAll for multiple buttons
+                resetBtn: document.querySelectorAll('.resetBtn'),     // Use querySelectorAll for multiple buttons
+                resultsChartCanvas: document.getElementById('resultsChart'),
+                resultsTableContainer: document.getElementById('resultsTableContainer'),
+                resultsTableBody: document.getElementById('resultsTableBody'),
+                parameterSummary: document.getElementById('parameterSummary'), // Summary above chart
+                tableParameterSummary: document.getElementById('tableParameterSummary') // Summary above table
+            };
+
+
+            let resultsChart;
+
+            // --- Dynamic Layout Function ---
+            function updateLayout() {
+                if (window.innerWidth > window.innerHeight) {
+                    mainContainer.classList.add('layout-landscape');
+                } else {
+                    mainContainer.classList.remove('layout-landscape');
+                }
+                // It's good practice to tell Chart.js to resize after container changes
+                if (resultsChart) {
+                    resultsChart.resize();
+                }
+            }
+
+
+            // --- Helper: UUID Generator ---
+            const generateUUID = () => {
+                if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+                    return crypto.randomUUID();
+                }
+                let d = new Date().getTime();
+                if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+                    d += performance.now();
+                }
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                    const r = (d + Math.random() * 16) % 16 | 0;
+                    d = Math.floor(d / 16);
+                    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                });
+            };
+
+            // --- Helper: Calculate Intra-Year Interest ---
+            const calculateIntraYearInterestOnMonthlyContributions = (monthlyContribution, annualInterestRate) => {
+                if (annualInterestRate === 0) return 0;
+                let totalAnnualInterest = 0.0;
+                const numMonthsInYear = 12;
+                for (let monthNumber = 1; monthNumber <= numMonthsInYear; monthNumber++) {
+                    const monthsInvestedWithinYear = numMonthsInYear - monthNumber;
+                    if (monthsInvestedWithinYear <= 0) continue;
+                    const interestFromThisMonthContribution = monthlyContribution * annualInterestRate/100 * (monthsInvestedWithinYear / numMonthsInYear);
+                    totalAnnualInterest += interestFromThisMonthContribution;
+                }
+                return totalAnnualInterest;
+            };
+
+            // --- Helper: Calculate Annual Extra Expenses for Age ---
+            const calculateAnnualExtraExpensesForAge = (currentAge, extraExpensesList) => {
+                let annualPayment = 0;
+                extraExpensesList.forEach(expense => {
+                    if (expense.totalAmount > 0 && expense.monthlyPayment > 0) {
+                        const numberOfPayments = Math.ceil(expense.totalAmount / expense.monthlyPayment);
+                        const expenseStartAbsoluteMonth = Math.floor(expense.startAge * 12);
+                        const expenseEndAbsoluteMonth = expenseStartAbsoluteMonth + numberOfPayments;
+                        const currentYearStartAbsoluteMonth = Math.floor(currentAge * 12);
+                        const currentYearEndAbsoluteMonth = Math.floor((currentAge + 1) * 12);
+                        const overlapStartMonth = Math.max(expenseStartAbsoluteMonth, currentYearStartAbsoluteMonth);
+                        const overlapEndMonth = Math.min(expenseEndAbsoluteMonth, currentYearEndAbsoluteMonth);
+                        if (overlapStartMonth < overlapEndMonth) {
+                            const numberOfOverlappingMonths = overlapEndMonth - overlapStartMonth;
+                            annualPayment += numberOfOverlappingMonths * expense.monthlyPayment;
+                        }
+                    }
+                });
+                return annualPayment;
+            };
+
+            // --- Core Calculation Logic (from TSX) ---
+            const calculateLyingFlatFinances = (p) => {
+                const results = [];
+                for (let lyingFlatAge = p.lyingFlatStart; lyingFlatAge <= p.lyingFlatEnd; lyingFlatAge++) {
+                    const simulateFinalSavings = (S0) => {
+                        let S = S0;
+                        for (let age = lyingFlatAge; age <= p.maxAge; age++) {
+                            const yearsSinceStart = age - p.workStartAge;
+                            const currentMonthlyExpense = p.monthlyExpense * Math.pow(1 + p.inflationRate/100, Math.max(0, yearsSinceStart));
+                            let currentMonthlyPension = 0;
+                            if (age >= p.retirementAge) {
+                                if (p.pensionInflationAdjusted) {
+                                    const pensionYears = age - p.retirementAge;
+                                    currentMonthlyPension = p.monthlyPension * Math.pow(1 + p.inflationRate/100, pensionYears);
+                                } else {
+                                    currentMonthlyPension = p.monthlyPension;
+                                }
+                            }
+                            const annualLivingExpense = (currentMonthlyExpense - currentMonthlyPension) * 12;
+                            const annualExtraExpenses = calculateAnnualExtraExpensesForAge(age, p.extraExpenses);
+                            const annualNetExpense = annualLivingExpense + annualExtraExpenses;
+                            S *= (1 + p.savingsReturnRate/100);
+                            S -= annualNetExpense;
+                        }
+                        return S;
+                    };
+
+                    let lowS = 0;
+                    let highS = 1e7; // Increased upper bound
+                    const tol = 1e-4;
+                    let iterations = 0; // Safety break for binary search
+                    while (highS - lowS > tol && iterations < 100) { // Added iteration limit
+                        const mid = (lowS + highS) / 2;
+                        if (simulateFinalSavings(mid) >= 0) highS = mid;
+                        else lowS = mid;
+                        iterations++;
+                    }
+                    const requiredSavings = highS;
+
+                    let currentTotalLyingFlatPeriodReturn = 0;
+                    let S_for_interest_calc_lying_flat = requiredSavings;
+                    for (let age_lp = lyingFlatAge; age_lp <= p.maxAge; age_lp++) {
+                        const interestThisYearInLyingFlat = S_for_interest_calc_lying_flat * p.savingsReturnRate/100;
+                        currentTotalLyingFlatPeriodReturn += interestThisYearInLyingFlat;
+                        S_for_interest_calc_lying_flat += interestThisYearInLyingFlat;
+                        const yearsSinceStart = age_lp - p.workStartAge;
+                        const currentMonthlyExpense = p.monthlyExpense * Math.pow(1 + p.inflationRate/100, Math.max(0, yearsSinceStart));
+                        let currentMonthlyPension = 0;
+                        if (age_lp >= p.retirementAge) {
+                            if (p.pensionInflationAdjusted) {
+                                const pensionYears = age_lp - p.retirementAge;
+                                currentMonthlyPension = p.monthlyPension * Math.pow(1 + p.inflationRate/100, pensionYears);
+                            } else {
+                                currentMonthlyPension = p.monthlyPension;
+                            }
+                        }
+                        const annualLivingExpense = (currentMonthlyExpense - currentMonthlyPension) * 12;
+                        const annualExtraExpenses = calculateAnnualExtraExpensesForAge(age_lp, p.extraExpenses);
+                        const annualNetExpense = annualLivingExpense + annualExtraExpenses;
+                        S_for_interest_calc_lying_flat -= annualNetExpense;
+                    }
+
+                    const targetAccumulation = requiredSavings;
+                    let low = 0;
+                    let high = 1000; // Start annual salary max guess
+                    let requiredSalary = -1;
+                    let bestTotalWorkPeriodReturn = -1;
+                    iterations = 0; // Reset for this binary search
+
+                    while (high - low >= 0.0001 && iterations < 100) { // Added iteration limit
+                        const guess = (low + high) / 2;
+                        let accumulatedSavings = p.initialSavings;
+                        let tempWorkPeriodReturn = 0;
+                        for (let age = p.workStartAge; age < lyingFlatAge; age++) {
+                            const yearsWorked = age - p.workStartAge;
+                            const currentAnnualSalary = guess * Math.pow(1 + p.salaryGrowthRate/100, Math.max(0, yearsWorked));
+                            const currentAnnualLivingExpense = p.monthlyExpense * Math.pow(1 + p.inflationRate/100, Math.max(0, yearsWorked)) * 12;
+                            let currentAnnualPension = 0;
+                            if (age >= p.retirementAge) {
+                                let currentMonthlyPensionVal = 0;
+                                if (p.pensionInflationAdjusted) {
+                                    const pensionYears = age - p.retirementAge;
+                                    currentMonthlyPensionVal = p.monthlyPension * Math.pow(1 + p.inflationRate/100, pensionYears);
+                                } else {
+                                    currentMonthlyPensionVal = p.monthlyPension;
+                                }
+                                currentAnnualPension = currentMonthlyPensionVal * 12;
+                            }
+                            const currentAnnualExtraExpenses = calculateAnnualExtraExpensesForAge(age, p.extraExpenses);
+                            const netAnnualPrincipalSavingThisYear = currentAnnualSalary + currentAnnualPension - currentAnnualLivingExpense - currentAnnualExtraExpenses;
+                            const interestFromPrevBalance = accumulatedSavings * p.savingsReturnRate/100;
+                            tempWorkPeriodReturn += interestFromPrevBalance;
+                            accumulatedSavings *= (1 + p.savingsReturnRate/100);
+                            accumulatedSavings += netAnnualPrincipalSavingThisYear;
+                            if (p.savingsReturnRate > 0 && netAnnualPrincipalSavingThisYear !== 0) {
+                                const monthlyEquivalentSaving = netAnnualPrincipalSavingThisYear / 12;
+                                const intraYearInterestOnThisYearsSavings = calculateIntraYearInterestOnMonthlyContributions(monthlyEquivalentSaving, p.savingsReturnRate);
+                                tempWorkPeriodReturn += intraYearInterestOnThisYearsSavings;
+                                accumulatedSavings += intraYearInterestOnThisYearsSavings;
+                            }
+                        }
+                        if (accumulatedSavings >= targetAccumulation) {
+                            requiredSalary = guess;
+                            bestTotalWorkPeriodReturn = tempWorkPeriodReturn;
+                            high = guess;
+                        } else {
+                            low = guess;
+                        }
+                        iterations++;
+                    }
+
+                    if (requiredSalary < 0 && low === 0) { // Check if zero salary is enough
+                        let accumulatedSavingsWithZeroSalary = p.initialSavings;
+                        let tempWorkPeriodReturnWithZeroSalary = 0;
+                        for (let age = p.workStartAge; age < lyingFlatAge; age++) {
+                            const yearsWorked = age - p.workStartAge;
+                            const currentAnnualLivingExpense = p.monthlyExpense * Math.pow(1 + p.inflationRate/100, Math.max(0, yearsWorked)) * 12;
+                            const currentAnnualExtraExpenses = calculateAnnualExtraExpensesForAge(age, p.extraExpenses);
+                            const netAnnualPrincipalSavingThisYear = 0 - currentAnnualLivingExpense - currentAnnualExtraExpenses; 
+                            
+                            const interestFromPrevBalance = accumulatedSavingsWithZeroSalary * p.savingsReturnRate/100;
+                            tempWorkPeriodReturnWithZeroSalary += interestFromPrevBalance;
+                            accumulatedSavingsWithZeroSalary *= (1 + p.savingsReturnRate/100);
+                            accumulatedSavingsWithZeroSalary += netAnnualPrincipalSavingThisYear;
+                            if (p.savingsReturnRate > 0 && netAnnualPrincipalSavingThisYear !== 0) {
+                                const monthlyEquivalentSaving = netAnnualPrincipalSavingThisYear / 12;
+                                const intraYearInterest = calculateIntraYearInterestOnMonthlyContributions(monthlyEquivalentSaving, p.savingsReturnRate);
+                                tempWorkPeriodReturnWithZeroSalary += intraYearInterest;
+                                accumulatedSavingsWithZeroSalary += intraYearInterest;
+                            }
+                        }
+                        if (accumulatedSavingsWithZeroSalary >= targetAccumulation) {
+                            requiredSalary = 0;
+                            bestTotalWorkPeriodReturn = tempWorkPeriodReturnWithZeroSalary;
+                        } else {
+                            requiredSalary = -1;
+                            bestTotalWorkPeriodReturn = -1;
+                        }
+                    }
+                    
+                    const yearsWorkedFinal = lyingFlatAge - 1 - p.workStartAge;
+                    const finalAnnualSalary = requiredSalary > 0 && yearsWorkedFinal >=0 ? requiredSalary * Math.pow(1 + p.salaryGrowthRate/100, yearsWorkedFinal) : (requiredSalary === 0 ? 0 : -1) ;
+                    
+                    results.push({
+                        age: lyingFlatAge,
+                        requiredSavings: Number(requiredSavings.toFixed(2)),
+                        totalWorkPeriodReturn: Number(bestTotalWorkPeriodReturn.toFixed(2)),
+                        totalLyingFlatPeriodReturn: Number(currentTotalLyingFlatPeriodReturn.toFixed(2)),
+                        startAnnualSalary: Number(requiredSalary.toFixed(2)),
+                        startMonthlySalary: Number(requiredSalary >=0 ? (requiredSalary / 12).toFixed(4) : -1),
+                        finalAnnualSalary: Number(finalAnnualSalary.toFixed(2)),
+                        finalMonthlySalary: Number(finalAnnualSalary >=0 ? (finalAnnualSalary / 12).toFixed(4) : -1),
+                    });
+                }
+                return results;
+            };
+
+            // --- UI Update Functions ---
+            function updateSliderDisplay(sliderElem, displayElem, numElem, isFloat = false, precision = 2) {
+                const value = parseFloat(sliderElem.value);
+                if (sliderElem.id === 'inflationRate' || sliderElem.id === 'savingsReturnRate' || sliderElem.id === 'salaryGrowthRate') {
+                    displayElem.textContent = value.toString() + '%';
+                    numElem.value = value.toString(); // Keeps it like "2" or "2.5"
+                } else {
+                    displayElem.textContent = isFloat ? value.toFixed(precision) : value.toString();
+                    numElem.value = isFloat ? value.toFixed(precision) : value.toString();
+                }
+
+                if (sliderElem.id === 'lyingFlatStart' || sliderElem.id === 'lyingFlatStartNum') {
+                    const endVal = parseFloat(controls.lyingFlatEnd.value);
+                    if (value > endVal) {
+                        controls.lyingFlatEnd.value = value;
+                        controls.lyingFlatEndNum.value = value;
+                        controls.lyingFlatEndValue.textContent = value.toString();
+                    }
+                } else if (sliderElem.id === 'lyingFlatEnd' || sliderElem.id === 'lyingFlatEndNum') {
+                     const startVal = parseFloat(controls.lyingFlatStart.value);
+                     if (value < startVal) {
+                        controls.lyingFlatStart.value = value;
+                        controls.lyingFlatStartNum.value = value;
+                        controls.lyingFlatStartValue.textContent = value.toString();
+                     }
+                }
+            }
+            
+            function updateNumberInput(numElem, sliderElem, displayElem, isFloat = false, precision = 2) {
+                let value = parseFloat(numElem.value);
+                const min = parseFloat(sliderElem.min);
+                const max = parseFloat(sliderElem.max);
+                if (isNaN(value)) value = min; 
+                if (value < min) value = min;
+                if (value > max) value = max;
+                
+                sliderElem.value = value; // Update slider position
+                
+                if (numElem.id === 'inflationRateNum' || numElem.id === 'savingsReturnRateNum' || numElem.id === 'salaryGrowthRateNum') {
+                    // For these, value might be 2.0, 2.5. toString() handles this well.
+                    displayElem.textContent = value.toString() + '%';
+                    numElem.value = value.toString(); // Update num input to reflect validated/clamped value
+                } else {
+                    // For other inputs, format with precision
+                    numElem.value = isFloat ? value.toFixed(precision) : value.toString(); 
+                    displayElem.textContent = isFloat ? value.toFixed(precision) : value.toString();
+                }
+
+
+                if (numElem.id === 'lyingFlatStartNum') {
+                    const endVal = parseFloat(controls.lyingFlatEnd.value);
+                    if (value > endVal) {
+                        controls.lyingFlatEnd.value = value;
+                        controls.lyingFlatEndNum.value = value; // Update the other number input
+                        controls.lyingFlatEndValue.textContent = value.toString(); // Update its display
+                    }
+                } else if (numElem.id === 'lyingFlatEndNum') {
+                     const startVal = parseFloat(controls.lyingFlatStart.value);
+                     if (value < startVal) {
+                        controls.lyingFlatStart.value = value;
+                        controls.lyingFlatStartNum.value = value; // Update the other number input
+                        controls.lyingFlatStartValue.textContent = value.toString(); // Update its display
+                     }
+                }
+            }
+
+            function addExtraExpenseRow(expense = { id: generateUUID(), name: "", totalAmount: 0, monthlyPayment: 0, startAge: parseFloat(controls.workStartAge.value) || defaultParams.workStartAge }) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'extra-expense-item';
+                itemDiv.dataset.id = expense.id;
+                itemDiv.innerHTML = `
+                    <h4>额外支出项</h4>
+                    <div class="extra-expense-inputs">
+                        <div class="param-group">
+                            <label for="expName-${expense.id}">名称</label>
+                            <input type="text" id="expName-${expense.id}" data-field="name" value="${expense.name}" placeholder="例如: 房贷">
+                        </div>
+                        <div class="param-group">
+                            <label for="expTotal-${expense.id}">总额(万)</label>
+                            <input type="number" id="expTotal-${expense.id}" data-field="totalAmount" step="0.1" value="${expense.totalAmount}">
+                        </div>
+                        <div class="param-group">
+                            <label for="expMonthly-${expense.id}">月供(万)</label>
+                            <input type="number" id="expMonthly-${expense.id}" data-field="monthlyPayment" step="0.01" value="${expense.monthlyPayment}">
+                        </div>
+                        <div class="param-group">
+                            <label for="expStartAge-${expense.id}">开始年龄</label>
+                            <input type="number" id="expStartAge-${expense.id}" data-field="startAge" value="${expense.startAge}">
+                        </div>
+                        <button type="button" class="destructive remove-expense-btn">移除</button>
+                    </div>
+                    <p class="info-text" id="expInfo-${expense.id}"></p>
+                `;
+                controls.extraExpensesContainer.appendChild(itemDiv);
+                itemDiv.querySelector('.remove-expense-btn').addEventListener('click', () => itemDiv.remove());
+
+                const inputsForInfo = itemDiv.querySelectorAll('input[data-field="totalAmount"], input[data-field="monthlyPayment"]');
+                inputsForInfo.forEach(input => input.addEventListener('input', () => updateExtraExpenseInfo(itemDiv)));
+                updateExtraExpenseInfo(itemDiv);
+            }
+
+            function updateExtraExpenseInfo(itemDiv) {
+                const totalAmount = parseFloat(itemDiv.querySelector('input[data-field="totalAmount"]').value) || 0;
+                const monthlyPayment = parseFloat(itemDiv.querySelector('input[data-field="monthlyPayment"]').value) || 0;
+                const infoP = itemDiv.querySelector(`#expInfo-${itemDiv.dataset.id}`);
+
+                if (totalAmount > 0 && monthlyPayment > 0) {
+                    const months = Math.ceil(totalAmount / monthlyPayment);
+                    const totalPaid = (months * monthlyPayment).toFixed(2);
+                    infoP.textContent = `预计还款月数: ${months} 月, 总支付: ${totalPaid} 万元.`;
+                } else {
+                    infoP.textContent = "";
+                }
+            }
+
+            // --- Update Parameter Summary ---
+            // This function now takes the target element as an argument
+            function updateParameterSummary(params, targetElement) {
+                const extraExpensesSummary = params.extraExpenses.length > 0
+                    ? params.extraExpenses.map(exp => `${exp.name || '未命名'} (总额 ${exp.totalAmount} 万, 月供 ${exp.monthlyPayment} 万, 从 ${exp.startAge} 岁开始)`).join('; ')
+                    : '无';
+
+                const summary = `
+                    <p>
+                        当前年龄: <strong>${params.workStartAge}</strong> 岁,
+                        寿命终点: <strong>${params.maxAge}</strong> 岁,
+                        平均月支出: <strong>${params.monthlyExpense.toFixed(2)}</strong> 万元,
+                    </p>
+                    <p>
+                        通胀率: <strong>${params.inflationRate}%</strong>,
+                        存款年化收益率: <strong>${params.savingsReturnRate}%</strong>,
+                        当前存款: <strong>${params.initialSavings.toFixed(1)}</strong> 万元.
+                    </p>
+                    <p>
+                        年薪增长率: <strong>${params.salaryGrowthRate}%</strong>,
+                        退休年龄: <strong>${params.retirementAge}</strong> 岁,
+                        退休金: <strong>${params.monthlyPension.toFixed(2)}</strong> 万元/月 (${params.pensionInflationAdjusted ? '跟随通胀增长' : '不跟随通胀增长'}).
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        额外支出项: ${extraExpensesSummary}.
+                    </p>
+                `;
+                targetElement.innerHTML = summary;
+            }
+
+
+            // --- Chart.js Functions ---
+            function initChart() {
+                if (resultsChart) {
+                    resultsChart.destroy();
+                }
+                const ctx = controls.resultsChartCanvas.getContext('2d');
+                resultsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [], 
+                        datasets: [
+                            {
+                                label: '躺平时需存款 (万元)',
+                                data: [],
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                tension: 0.1,
+                                yAxisID: 'y',
+                            },
+                            {
+                                label: '最低年薪要求 (万元)',
+                                data: [],
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                tension: 0.1,
+                                yAxisID: 'y1',
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Crucial for flexible height/width
+                        plugins: {
+                            title: { display: true, text: '财务规划结果图表', color: '#e0e0e0', font: {size: 16}},
+                            legend: { labels: { color: '#e0e0e0'}},
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' 万元';
+                                        } else {
+                                            label += '无法达成';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: { display: true, text: '计划躺平年龄', color: '#e0e0e0' },
+                                ticks: { color: '#e0e0e0', autoSkip: true, maxTicksLimit: 15 }, // Help with narrow charts
+                                grid: { color: '#555' }
+                            },
+                            y: { 
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: '存款(万)', color: 'rgba(75, 192, 192, 1)' }, // Shorter title
+                                ticks: { color: 'rgba(75, 192, 192, 1)', maxTicksLimit: 8 },
+                                grid: { color: '#555' }
+                            },
+                            y1: { 
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: '年薪(万)', color: 'rgba(255, 99, 132, 1)' }, // Shorter title
+                                ticks: { color: 'rgba(255, 99, 132, 1)', maxTicksLimit: 8 },
+                                grid: { drawOnChartArea: false }, 
+                            }
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    }
+                });
+            }
+
+            function updateChart(resultsData) {
+                if (!resultsChart) initChart();
+                
+                const labels = resultsData.map(r => r.age);
+                const requiredSavings = resultsData.map(r => r.requiredSavings);
+                const startAnnualSalaries = resultsData.map(r => r.startAnnualSalary < 0 ? null : r.startAnnualSalary); 
+
+                resultsChart.data.labels = labels;
+                resultsChart.data.datasets[0].data = requiredSavings;
+                resultsChart.data.datasets[1].data = startAnnualSalaries;
+                resultsChart.update();
+            }
+            
+            function updateTable(resultsData) {
+                controls.resultsTableBody.innerHTML = ''; 
+
+                if (resultsData && resultsData.length > 0) {
+                    // Show the summary and the table container
+                    controls.tableParameterSummary.style.display = 'block';
+                    controls.resultsTableContainer.style.display = 'block';
+                    
+                    // Update the parameter summary above the table
+                    updateParameterSummary(gatherParams(), controls.tableParameterSummary);
+
+                    resultsData.forEach(r => {
+                        const row = controls.resultsTableBody.insertRow();
+                        
+                        const createCell = (text, isUnachievable = false) => {
+                            const cell = row.insertCell();
+                            cell.textContent = text;
+                            if (isUnachievable) cell.classList.add('unachievable');
+                            return cell;
+                        };
+
+                        createCell(r.age);
+                        createCell(r.requiredSavings.toLocaleString(undefined, { minimumFractionDigits: 2 }));
+                        
+                        const startSalaryUnachievable = r.startAnnualSalary < 0;
+                        createCell(startSalaryUnachievable ? "无法达成" : r.startMonthlySalary.toFixed(4), startSalaryUnachievable);
+                        createCell(startSalaryUnachievable ? "无法达成" : r.startAnnualSalary.toFixed(2), startSalaryUnachievable);
+                        createCell(startSalaryUnachievable ? "无法达成" : r.totalWorkPeriodReturn.toFixed(2), startSalaryUnachievable);
+                        
+                        createCell(r.totalLyingFlatPeriodReturn.toFixed(2));
+
+                        const finalSalaryUnachievable = r.finalAnnualSalary < 0;
+                        createCell(finalSalaryUnachievable ? "无法达成" : r.finalMonthlySalary.toFixed(4), finalSalaryUnachievable);
+                        createCell(finalSalaryUnachievable ? "无法达成" : r.finalAnnualSalary.toFixed(2), finalSalaryUnachievable);
+                    });
+                } else {
+                    // Hide both the summary and the table container
+                    controls.tableParameterSummary.style.display = 'none';
+                    controls.resultsTableContainer.style.display = 'none';
+                    // Clear the parameter summary above the table when the table is hidden
+                    controls.tableParameterSummary.innerHTML = '';
+                }
+            }
+
+
+            function setupEventListeners() {
+                const sliderConfig = [
+                    {slider: controls.workStartAge, display: controls.workStartAgeValue, num: controls.workStartAgeNum, isFloat: false},
+                    {slider: controls.maxAge, display: controls.maxAgeValue, num: controls.maxAgeNum, isFloat: false},
+                    {slider: controls.monthlyExpense, display: controls.monthlyExpenseValue, num: controls.monthlyExpenseNum, isFloat: true, precision: 2},
+                    {slider: controls.inflationRate, display: controls.inflationRateValue, num: controls.inflationRateNum, isFloat: true, precision: 1}, // HTML step 0.1
+                    {slider: controls.savingsReturnRate, display: controls.savingsReturnRateValue, num: controls.savingsReturnRateNum, isFloat: true, precision: 1}, // HTML step 0.1
+                    {slider: controls.initialSavings, display: controls.initialSavingsValue, num: controls.initialSavingsNum, isFloat: true, precision: 1}, // Changed precision to 1
+                    {slider: controls.salaryGrowthRate, display: controls.salaryGrowthRateValue, num: controls.salaryGrowthRateNum, isFloat: true, precision: 1}, // HTML step 0.1
+                    {slider: controls.retirementAge, display: controls.retirementAgeValue, num: controls.retirementAgeNum, isFloat: false},
+                    {slider: controls.lyingFlatStart, display: controls.lyingFlatStartValue, num: controls.lyingFlatStartNum, isFloat: false},
+                    {slider: controls.lyingFlatEnd, display: controls.lyingFlatEndValue, num: controls.lyingFlatEndNum, isFloat: false},
+                    {slider: controls.monthlyPension, display: controls.monthlyPensionValue, num: controls.monthlyPensionNum, isFloat: true, precision: 2},
+                ];
+
+                sliderConfig.forEach(conf => {
+                    conf.slider.addEventListener('input', () => updateSliderDisplay(conf.slider, conf.display, conf.num, conf.isFloat, conf.precision));
+                    conf.num.addEventListener('change', () => updateNumberInput(conf.num, conf.slider, conf.display, conf.isFloat, conf.precision)); 
+                });
+
+                controls.addExtraExpenseBtn.addEventListener('click', () => addExtraExpenseRow());
+                
+                // Attach event listeners to ALL buttons with the respective classes
+                controls.computeBtn.forEach(btn => btn.addEventListener('click', handleCompute));
+                controls.resetBtn.forEach(btn => btn.addEventListener('click', resetAllParameters));
+
+                window.addEventListener('resize', updateLayout); // Call on resize
+            }
+            
+            function gatherParams() {
+                const params = {};
+                Object.keys(defaultParams).forEach(key => {
+                    if (key === 'extraExpenses') {
+                        params[key] = [];
+                        controls.extraExpensesContainer.querySelectorAll('.extra-expense-item').forEach(itemDiv => {
+                            const expense = { id: itemDiv.dataset.id };
+                            itemDiv.querySelectorAll('input[data-field]').forEach(input => {
+                                const field = input.dataset.field;
+                                expense[field] = (input.type === 'text' || field === 'name') ? input.value : parseFloat(input.value);
+                            });
+                            params[key].push(expense);
+                        });
+                    } else if (key === 'pensionInflationAdjusted') {
+                         params[key] = controls[key].checked;
+                    } else if (controls[key] && controls[key].tagName !== 'BUTTON' && controls[key].tagName !== 'DIV') { // Exclude button and div NodeLists/elements
+                        params[key] = parseFloat(controls[key].value);
+                    } else { 
+                        // Handle cases where the key might not correspond to a single input element
+                        // or is one of the NodeLists (computeBtn, resetBtn) or the new div (tableParameterSummary)
+                        // For NodeLists/Divs, we don't need their value here, they are just for event listeners/display
+                        if (defaultParams.hasOwnProperty(key)) {
+                             params[key] = defaultParams[key];
+                        }
+                    }
+                });
+                return params;
+            }
+
+            function handleCompute() {
+                const currentParams = gatherParams();
+                if (currentParams.lyingFlatStart > currentParams.lyingFlatEnd) {
+                    alert("计划躺平年龄（最早）不能大于计划躺平年龄（最晚）。请调整。");
+                    return;
+                }
+                // Update summary above the chart
+                updateParameterSummary(currentParams, controls.parameterSummary); 
+                const resultsData = calculateLyingFlatFinances(currentParams);
+                updateChart(resultsData);
+                // updateTable will now also update the summary above the table
+                updateTable(resultsData); 
+            }
+            
+            function resetAllParameters() {
+                Object.keys(defaultParams).forEach(key => {
+                    if (key === 'extraExpenses') {
+                        controls.extraExpensesContainer.innerHTML = ''; 
+                    } else if (key === 'pensionInflationAdjusted') {
+                        controls[key].checked = defaultParams[key];
+                    } else if (controls[key] && controls[`${key}Value`] && controls[`${key}Num`]) {
+                        controls[key].value = defaultParams[key];
+                        controls[`${key}Num`].value = defaultParams[key];
+                        
+                        let isFloatParam;
+                        let precisionParam;
+
+                        switch (key) {
+                            case 'monthlyExpense':
+                            case 'monthlyPension':
+                                isFloatParam = true;
+                                precisionParam = 2;
+                                break;
+                            case 'initialSavings': // Changed precision for initialSavings
+                                isFloatParam = true;
+                                precisionParam = 1;
+                                break;
+                            case 'inflationRate':
+                            case 'savingsReturnRate':
+                            case 'salaryGrowthRate':
+                                isFloatParam = true; 
+                                precisionParam = 1; 
+                                break;
+                            case 'workStartAge':
+                            case 'maxAge':
+                            case 'retirementAge':
+                            case 'lyingFlatStart':
+                            case 'lyingFlatEnd':
+                                isFloatParam = false;
+                                precisionParam = 0;
+                                break;
+                            default:
+                                // Fallback for any other unexpected numeric param from defaultParams
+                                // This case should ideally not be hit if all params are covered.
+                                isFloatParam = (typeof defaultParams[key] === 'number' && !Number.isInteger(defaultParams[key]));
+                                precisionParam = isFloatParam ? 2 : 0;
+                                break;
+                        }
+                        updateSliderDisplay(controls[key], controls[`${key}Value`], controls[`${key}Num`], isFloatParam, precisionParam);
+                    }
+                });
+                
+                // Update both summaries with default params
+                updateParameterSummary(defaultParams, controls.parameterSummary); 
+                
+                // Hide and clear table summary on reset
+                controls.tableParameterSummary.innerHTML = ''; 
+                controls.tableParameterSummary.style.display = 'none';
+                
+                initChart(); 
+                controls.resultsTableBody.innerHTML = ''; 
+                controls.resultsTableContainer.style.display = 'none'; 
+            }
+
+            // Initialize page
+            updateLayout(); // Initial layout check
+            resetAllParameters(); 
+            initChart();
+            setupEventListeners();
+        });
+    </script>
+</body>
+</html>
