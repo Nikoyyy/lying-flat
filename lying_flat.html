@@ -80,7 +80,7 @@
             line-height: 1.6;
             color: #ccc; /* Parameter description color */
             /* Ensure summary itself doesn't overflow */
-            overflow-x: hidden; 
+            overflow-x: hidden;
             word-wrap: break-word; /* Allow long words to break */
         }
         .parameter-summary strong {
@@ -149,7 +149,7 @@
             flex-grow: 1;
         }
          .param-group .value-display {
-            min-width: 40px; 
+            min-width: 40px;
             text-align: left;
             color: #FFD700;
          }
@@ -211,7 +211,7 @@
             border-radius: 8px;
             margin-top: 20px;
             position: relative; /* Important for Chart.js responsiveness */
-            height: 400px; 
+            height: 400px;
         }
         
         /* Adjust chart height in landscape mode if needed, or make it more dynamic */
@@ -244,20 +244,20 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Allow more flexible wrapping */
             gap: 10px;
-            align-items: end; 
+            align-items: end;
         }
         .extra-expense-inputs .param-group {
             margin-bottom: 0;
         }
          .extra-expense-inputs input[type="number"], .extra-expense-inputs input[type="text"]{
-            width: 100%; 
+            width: 100%;
             box-sizing: border-box;
          }
         .extra-expense-item button.destructive {
             padding: 8px 12px;
             font-size: 0.9em;
-            height: 38px; 
-            align-self: end; 
+            height: 38px;
+            align-self: end;
         }
         .info-text {
             font-size: 0.8em;
@@ -267,16 +267,16 @@
 
         .results-table-container {
             margin-top: 30px;
-            overflow-x: auto; 
-            background-color: #3a3a3a; 
-            padding: 1px; 
-            border-radius: 8px; 
+            overflow-x: auto;
+            background-color: #3a3a3a;
+            padding: 1px;
+            border-radius: 8px;
         }
         /* Removed specific style for .results-table-container .parameter-summary */
         
         .results-table {
             width: 100%;
-            min-width: 800px; 
+            min-width: 800px;
             border-collapse: collapse;
         }
         .results-table th, .results-table td {
@@ -284,28 +284,191 @@
             padding: 10px 12px;
             text-align: center;
             font-size: 0.9em;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
         .results-table th {
-            background-color: #444; 
-            color: #90CAF9; 
+            background-color: #444;
+            color: #90CAF9;
             font-weight: bold;
         }
         .results-table td {
             color: #e0e0e0;
         }
         .results-table tr:nth-child(even) td {
-            background-color: #3f3f3f; 
+            background-color: #3f3f3f;
         }
          .results-table td.unachievable {
-             color: #ff9800; 
+             color: #ff9800;
              font-style: italic;
          }
+
+        /* Removed the old mobile-screenshot class as columns are hidden dynamically */
+        /*
+        .results-table.mobile-screenshot th:nth-child(4),
+        .results-table.mobile-screenshot td:nth-child(4),
+        .results-table.mobile-screenshot th:nth-child(5),
+        .results-table.mobile-screenshot td:nth-child(5),
+        .results-table.mobile-screenshot th:nth-child(6),
+        .results-table.mobile-screenshot td:nth-child(6),
+        .results-table.mobile-screenshot th:nth-child(8),
+        .results-table.mobile-screenshot td:nth-child(8),
+        .results-table.mobile-screenshot th:nth-child(9),
+        .results-table.mobile-screenshot td:nth-child(9) {
+            display: none;
+        }
+        */
+
+        /* Style for the temporary screenshot container */
+        .screenshot-area {
+            padding: 20px;
+            background-color: #2b2b2b; /* Match container background */
+            color: #e0e0e0; /* Match text color */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+            position: absolute; /* Position off-screen */
+            left: -9999px;
+            top: -9999px;
+            /* Ensure cloned elements inherit styles */
+            /* width/min-width will be set dynamically by JS */
+        }
+        .screenshot-area .parameter-summary {
+             margin-bottom: 20px; /* Space between summary and table */
+             /* Ensure summary styles are applied */
+             background-color: #444;
+             padding: 15px;
+             border-radius: 8px;
+             font-size: 1em;
+             line-height: 1.6;
+             color: #ccc;
+             overflow-x: hidden;
+             word-wrap: break-word;
+        }
+         .screenshot-area .parameter-summary strong {
+             color: #FFD700;
+         }
+        .screenshot-area .results-table-container {
+             margin-top: 0; /* Remove top margin from cloned container */
+             overflow-x: visible; /* Ensure table is fully rendered */
+             background-color: #3a3a3a; /* Match table container background */
+             padding: 1px;
+             border-radius: 8px;
+        }
+         .screenshot-area .results-table {
+             min-width: auto; /* Allow table to shrink to container width */
+             width: 100%;
+         }
+         .screenshot-area .results-table th,
+         .screenshot-area .results-table td {
+             border: 1px solid #555;
+             padding: 8px 6px; /* Smaller padding for mobile */
+             text-align: center;
+             font-size: 0.8em; /* Smaller font size */
+             white-space: normal; /* Allow text wrapping */
+             word-break: break-word; /* Break long words */
+         }
+         /* Override mobile screenshot styles for full screenshot */
+         .screenshot-area.full-screenshot .results-table th,
+         .screenshot-area.full-screenshot .results-table td {
+             padding: 10px 12px; /* Restore original padding */
+             font-size: 0.9em; /* Restore original font size */
+             white-space: nowrap; /* Restore original nowrap */
+             word-break: normal; /* Restore original word-break */
+         }
+         /* Removed specific display: table-cell override as it's handled dynamically */
+         /*
+         .screenshot-area.full-screenshot .results-table th:nth-child(n+5),
+         .screenshot-area.full-screenshot .results-table td:nth-child(n+5) {
+             display: table-cell;
+         }
+         */
+
+
+         .screenshot-area .results-table th {
+             background-color: #444;
+             color: #90CAF9;
+             font-weight: bold;
+         }
+         .screenshot-area .results-table td {
+             color: #e0e0e0;
+         }
+         .screenshot-area .results-table tr:nth-child(even) td {
+             background-color: #3f3f3f;
+         }
+         .screenshot-area .results-table td.unachievable {
+             color: #ff9800;
+             font-style: italic;
+         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #3a3a3a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 44px 12px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            color: #e0e0e0;
+            width: 400px; /* Adjust width as needed */
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #90CAF9;
+        }
+
+        .modal-body .checkbox-group {
+            margin-bottom: 10px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #555;
+        }
+
+        .modal-footer button {
+            margin-top: 0; /* Override button default margin */
+        }
+
 
     </style>
 </head>
 <body>
-    <div class="container" id="mainContainer"> 
+    <div class="container" id="mainContainer">
         <h1>💰 躺平财务规划计算器 📈</h1>
         <p class="intro">
             调整以下参数，计算不同躺平年龄所需的财务准备和初始薪资要求。结果将以图表和表格形式展示。
@@ -432,13 +595,19 @@
                 <!-- Parameter summary text will be inserted here by JavaScript -->
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container" id="chartContainer">
                 <canvas id="resultsChart"></canvas>
             </div>
              <p class="info-text" style="text-align: center; margin-top: 15px;">
                 图表展示了在不同"计划躺平年龄"下，您需要积累的"躺平时需存款"以及开始工作时所需的"最低年薪"。
                 如果某条曲线在某个年龄点中断，表示在该参数条件下，该年龄的规划目标无法达成。
             </p>
+
+            <!-- Add the screenshot buttons here -->
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                 <button type="button" id="screenshotBtn" class="outline" style="display: none;">生成手机截图</button>
+                 <button type="button" id="fullScreenshotBtn" class="outline" style="display: none;">生成完整表格截图</button>
+            </div>
 
             <!-- Parameter Summary Section (Above Table) - Moved outside results-table-container -->
             <div class="parameter-summary" id="tableParameterSummary" style="display: none; margin-top: 30px;">
@@ -455,6 +624,7 @@
                             <th>最低年薪要求 (万元)</th>
                             <th>工作期利息总收益 (万元)</th>
                             <th>躺平期利息总收益 (万元)</th>
+                            <th>一生利息总收益 (万元)</th> <!-- Added new column header -->
                             <th>最后一年月薪 (万元)</th>
                             <th>最后一年年薪 (万元)</th>
                         </tr>
@@ -467,6 +637,24 @@
         </div>
     </div>
 
+    <!-- Column Selection Modal -->
+    <div class="modal-overlay" id="columnSelectionModalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择截图列</h3>
+            </div>
+            <div class="modal-body" id="columnSelectionModalBody">
+                <!-- Checkboxes will be inserted here by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmColumnSelectionBtn">确定</button>
+                <button type="button" id="cancelColumnSelectionBtn" class="outline">取消</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -529,14 +717,25 @@
                 computeBtn: document.querySelectorAll('.computeBtn'), // Use querySelectorAll for multiple buttons
                 resetBtn: document.querySelectorAll('.resetBtn'),     // Use querySelectorAll for multiple buttons
                 resultsChartCanvas: document.getElementById('resultsChart'),
+                chartContainer: document.getElementById('chartContainer'), // Added chart container element
                 resultsTableContainer: document.getElementById('resultsTableContainer'),
                 resultsTableBody: document.getElementById('resultsTableBody'),
                 parameterSummary: document.getElementById('parameterSummary'), // Summary above chart
-                tableParameterSummary: document.getElementById('tableParameterSummary') // Summary above table
+                tableParameterSummary: document.getElementById('tableParameterSummary'), // Summary above table
+                screenshotBtn: document.getElementById('screenshotBtn'), // Add the new button
+                fullScreenshotBtn: document.getElementById('fullScreenshotBtn'), // Add the new full screenshot button
+                resultsTable: document.querySelector('.results-table'), // Get the actual table element
+
+                // Modal elements
+                columnSelectionModalOverlay: document.getElementById('columnSelectionModalOverlay'),
+                columnSelectionModalBody: document.getElementById('columnSelectionModalBody'),
+                confirmColumnSelectionBtn: document.getElementById('confirmColumnSelectionBtn'),
+                cancelColumnSelectionBtn: document.getElementById('cancelColumnSelectionBtn')
             };
 
 
             let resultsChart;
+            let currentResultsData = []; // Store the last computed results data
 
             // --- Dynamic Layout Function ---
             function updateLayout() {
@@ -721,7 +920,7 @@
                             const yearsWorked = age - p.workStartAge;
                             const currentAnnualLivingExpense = p.monthlyExpense * Math.pow(1 + p.inflationRate/100, Math.max(0, yearsWorked)) * 12;
                             const currentAnnualExtraExpenses = calculateAnnualExtraExpensesForAge(age, p.extraExpenses);
-                            const netAnnualPrincipalSavingThisYear = 0 - currentAnnualLivingExpense - currentAnnualExtraExpenses; 
+                            const netAnnualPrincipalSavingThisYear = 0 - currentAnnualLivingExpense - currentAnnualExtraExpenses;
                             
                             const interestFromPrevBalance = accumulatedSavingsWithZeroSalary * p.savingsReturnRate/100;
                             tempWorkPeriodReturnWithZeroSalary += interestFromPrevBalance;
@@ -751,6 +950,7 @@
                         requiredSavings: Number(requiredSavings.toFixed(2)),
                         totalWorkPeriodReturn: Number(bestTotalWorkPeriodReturn.toFixed(2)),
                         totalLyingFlatPeriodReturn: Number(currentTotalLyingFlatPeriodReturn.toFixed(2)),
+                        totalInterestReturn: Number((bestTotalWorkPeriodReturn + currentTotalLyingFlatPeriodReturn).toFixed(2)), // Added total interest
                         startAnnualSalary: Number(requiredSalary.toFixed(2)),
                         startMonthlySalary: Number(requiredSalary >=0 ? (requiredSalary / 12).toFixed(4) : -1),
                         finalAnnualSalary: Number(finalAnnualSalary.toFixed(2)),
@@ -792,7 +992,7 @@
                 let value = parseFloat(numElem.value);
                 const min = parseFloat(sliderElem.min);
                 const max = parseFloat(sliderElem.max);
-                if (isNaN(value)) value = min; 
+                if (isNaN(value)) value = min;
                 if (value < min) value = min;
                 if (value > max) value = max;
                 
@@ -804,7 +1004,7 @@
                     numElem.value = value.toString(); // Update num input to reflect validated/clamped value
                 } else {
                     // For other inputs, format with precision
-                    numElem.value = isFloat ? value.toFixed(precision) : value.toString(); 
+                    numElem.value = isFloat ? value.toFixed(precision) : value.toString();
                     displayElem.textContent = isFloat ? value.toFixed(precision) : value.toString();
                 }
 
@@ -915,7 +1115,7 @@
                 resultsChart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: [], 
+                        labels: [],
                         datasets: [
                             {
                                 label: '躺平时需存款 (万元)',
@@ -966,7 +1166,7 @@
                                 ticks: { color: '#e0e0e0', autoSkip: true, maxTicksLimit: 15 }, // Help with narrow charts
                                 grid: { color: '#555' }
                             },
-                            y: { 
+                            y: {
                                 type: 'linear',
                                 display: true,
                                 position: 'left',
@@ -974,13 +1174,13 @@
                                 ticks: { color: 'rgba(75, 192, 192, 1)', maxTicksLimit: 8 },
                                 grid: { color: '#555' }
                             },
-                            y1: { 
+                            y1: {
                                 type: 'linear',
                                 display: true,
                                 position: 'right',
                                 title: { display: true, text: '年薪(万)', color: 'rgba(255, 99, 132, 1)' }, // Shorter title
                                 ticks: { color: 'rgba(255, 99, 132, 1)', maxTicksLimit: 8 },
-                                grid: { drawOnChartArea: false }, 
+                                grid: { drawOnChartArea: false },
                             }
                         },
                         interaction: {
@@ -996,7 +1196,7 @@
                 
                 const labels = resultsData.map(r => r.age);
                 const requiredSavings = resultsData.map(r => r.requiredSavings);
-                const startAnnualSalaries = resultsData.map(r => r.startAnnualSalary < 0 ? null : r.startAnnualSalary); 
+                const startAnnualSalaries = resultsData.map(r => r.startAnnualSalary < 0 ? null : r.startAnnualSalary);
 
                 resultsChart.data.labels = labels;
                 resultsChart.data.datasets[0].data = requiredSavings;
@@ -1005,12 +1205,15 @@
             }
             
             function updateTable(resultsData) {
-                controls.resultsTableBody.innerHTML = ''; 
+                currentResultsData = resultsData; // Store the data
+                controls.resultsTableBody.innerHTML = '';
 
                 if (resultsData && resultsData.length > 0) {
                     // Show the summary and the table container
                     controls.tableParameterSummary.style.display = 'block';
                     controls.resultsTableContainer.style.display = 'block';
+                    controls.screenshotBtn.style.display = 'block'; // Show the screenshot button
+                    controls.fullScreenshotBtn.style.display = 'block'; // Show the new full screenshot button
                     
                     // Update the parameter summary above the table
                     updateParameterSummary(gatherParams(), controls.tableParameterSummary);
@@ -1034,6 +1237,7 @@
                         createCell(startSalaryUnachievable ? "无法达成" : r.totalWorkPeriodReturn.toFixed(2), startSalaryUnachievable);
                         
                         createCell(r.totalLyingFlatPeriodReturn.toFixed(2));
+                        createCell(r.totalInterestReturn.toFixed(2), startSalaryUnachievable); // Add total interest cell
 
                         const finalSalaryUnachievable = r.finalAnnualSalary < 0;
                         createCell(finalSalaryUnachievable ? "无法达成" : r.finalMonthlySalary.toFixed(4), finalSalaryUnachievable);
@@ -1043,9 +1247,200 @@
                     // Hide both the summary and the table container
                     controls.tableParameterSummary.style.display = 'none';
                     controls.resultsTableContainer.style.display = 'none';
+                    controls.screenshotBtn.style.display = 'none'; // Hide the screenshot button
+                    controls.fullScreenshotBtn.style.display = 'none'; // Hide the new full screenshot button
                     // Clear the parameter summary above the table when the table is hidden
                     controls.tableParameterSummary.innerHTML = '';
+                    currentResultsData = []; // Clear stored data
                 }
+            }
+
+            // --- Screenshot Generation Helper ---
+            async function generateScreenshotFromClonedTable(clonedSummary, clonedTableContainer, selectedColumnIndices, isFullScreenshot = false) {
+                 // Create a temporary container for the screenshot
+                const screenshotArea = document.createElement('div');
+                screenshotArea.classList.add('screenshot-area');
+                
+                const baseMobileWidth = 375; // Base width for mobile screenshot
+                const minColumnWidth = 100; // Minimum width per column for calculation
+                const padding = 40; // Total horizontal padding (20px left + 20px right)
+
+                if (isFullScreenshot) {
+                    screenshotArea.classList.add('full-screenshot');
+                    // For full screenshot, use the actual table width
+                    screenshotArea.style.minWidth = controls.resultsTable.offsetWidth + 'px';
+                } else {
+                    // For mobile screenshot, calculate dynamic width based on selected columns
+                    const requiredWidth = Math.max(baseMobileWidth, selectedColumnIndices.length * minColumnWidth + padding);
+                    screenshotArea.style.width = requiredWidth + 'px';
+                    screenshotArea.style.minWidth = requiredWidth + 'px';
+                }
+                document.body.appendChild(screenshotArea);
+
+                // Append cloned elements to the temporary container
+                screenshotArea.appendChild(clonedSummary);
+                screenshotArea.appendChild(clonedTableContainer);
+
+                // Find the table inside the cloned container
+                const clonedTable = clonedTableContainer.querySelector('.results-table');
+
+                if (!isFullScreenshot && clonedTable && selectedColumnIndices) {
+                    // Hide columns that are NOT in the selectedColumnIndices list
+                    const allHeaders = clonedTable.querySelectorAll('thead th');
+                    const allRows = clonedTable.querySelectorAll('tbody tr');
+
+                    allHeaders.forEach((header, index) => {
+                        if (!selectedColumnIndices.includes(index)) {
+                            header.style.display = 'none';
+                            allRows.forEach(row => {
+                                if (row.cells[index]) {
+                                    row.cells[index].style.display = 'none';
+                                }
+                            });
+                        } else {
+                             // Ensure selected columns are visible (in case base styles hide them)
+                             header.style.display = ''; // Use default display
+                             allRows.forEach(row => {
+                                if (row.cells[index]) {
+                                    row.cells[index].style.display = ''; // Use default display
+                                }
+                            });
+                        }
+                    });
+                } else if (isFullScreenshot && clonedTable) {
+                     // Ensure all columns are visible for full screenshot
+                     const allHeaders = clonedTable.querySelectorAll('thead th');
+                     const allRows = clonedTable.querySelectorAll('tbody tr');
+                     allHeaders.forEach(header => header.style.display = '');
+                     allRows.forEach(row => {
+                         Array.from(row.cells).forEach(cell => cell.style.display = '');
+                     });
+                     // Ensure the cloned table has the correct min-width for rendering
+                     clonedTable.style.minWidth = controls.resultsTable.offsetWidth + 'px';
+                }
+
+
+                // Use html2canvas to render the temporary container
+                try {
+                    const canvas = await html2canvas(screenshotArea, {
+                        scale: 2, // Increase scale for better resolution
+                        backgroundColor: '#2b2b2b', // Ensure background is captured
+                        logging: false, // Disable logging
+                        useCORS: true // If any external images are used (unlikely here)
+                    });
+
+                    // Convert canvas to data URL
+                    const dataUrl = canvas.toDataURL('image/png');
+
+                    // Create a link to download the image
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = isFullScreenshot ? 'lying_flat_plan_full.png' : 'lying_flat_plan_mobile.png';
+                    document.body.appendChild(link); // Append to body to make it clickable in some browsers
+                    link.click(); // Trigger download
+                    document.body.removeChild(link); // Clean up
+
+                } catch (error) {
+                    console.error('Error generating screenshot:', error);
+                    alert('生成截图失败。');
+                } finally {
+                    // Clean up the temporary container
+                    screenshotArea.remove();
+                }
+            }
+
+
+            // --- Screenshot Function (Mobile - with selection) ---
+            function takeScreenshotWithSelection() {
+                if (!currentResultsData || currentResultsData.length === 0) {
+                    alert("请先进行计算以生成结果表格。");
+                    return;
+                }
+
+                const summaryElement = controls.tableParameterSummary;
+                const tableContainer = controls.resultsTableContainer;
+
+                if (summaryElement.style.display === 'none' || tableContainer.style.display === 'none') {
+                     alert("请先进行计算以生成结果表格。");
+                     return;
+                }
+
+                // Show the column selection modal
+                showColumnSelectionModal();
+            }
+
+            // --- Screenshot Function (Full Table) ---
+            async function takeFullScreenshot() {
+                 if (!currentResultsData || currentResultsData.length === 0) {
+                    alert("请先进行计算以生成结果表格。");
+                    return;
+                }
+
+                const summaryElement = controls.tableParameterSummary;
+                const tableContainer = controls.resultsTableContainer;
+
+                if (summaryElement.style.display === 'none' || tableContainer.style.display === 'none') {
+                     alert("请先进行计算以生成结果表格。");
+                     return;
+                }
+
+                // Clone the summary and table container
+                const clonedSummary = summaryElement.cloneNode(true);
+                const clonedTableContainer = tableContainer.cloneNode(true);
+
+                // Generate screenshot with all columns (pass null for selectedColumnIndices)
+                await generateScreenshotFromClonedTable(clonedSummary, clonedTableContainer, null, true);
+            }
+
+            // --- Modal Functions ---
+            function showColumnSelectionModal() {
+                const tableHeaders = controls.resultsTable.querySelectorAll('thead th');
+                const modalBody = controls.columnSelectionModalBody;
+                modalBody.innerHTML = ''; // Clear previous options
+
+                // Default selected columns for mobile (indices based on the table header order)
+                // 0: 躺平年龄, 1: 躺平时需存款, 2: 最低月薪要求, 6: 一生利息总收益
+                const defaultMobileIndices = [0, 1, 2, 6];
+
+                tableHeaders.forEach((th, index) => {
+                    const headerText = th.textContent;
+                    const checkboxGroup = document.createElement('div');
+                    checkboxGroup.className = 'checkbox-group';
+                    checkboxGroup.innerHTML = `
+                        <input type="checkbox" id="col-${index}" value="${index}" ${defaultMobileIndices.includes(index) ? 'checked' : ''}>
+                        <label for="col-${index}">${headerText}</label>
+                    `;
+                    modalBody.appendChild(checkboxGroup);
+                });
+
+                controls.columnSelectionModalOverlay.classList.add('visible');
+            }
+
+            function hideColumnSelectionModal() {
+                controls.columnSelectionModalOverlay.classList.remove('visible');
+            }
+
+            function handleColumnSelectionConfirm() {
+                const selectedIndices = [];
+                controls.columnSelectionModalBody.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                    selectedIndices.push(parseInt(checkbox.value, 10));
+                });
+
+                if (selectedIndices.length === 0) {
+                    alert("请至少选择一列。");
+                    return;
+                }
+
+                hideColumnSelectionModal();
+
+                // Clone the summary and table container *after* selection is confirmed
+                const summaryElement = controls.tableParameterSummary;
+                const tableContainer = controls.resultsTableContainer;
+                const clonedSummary = summaryElement.cloneNode(true);
+                const clonedTableContainer = tableContainer.cloneNode(true);
+
+                // Generate the screenshot with the selected columns
+                generateScreenshotFromClonedTable(clonedSummary, clonedTableContainer, selectedIndices, false);
             }
 
 
@@ -1066,14 +1461,31 @@
 
                 sliderConfig.forEach(conf => {
                     conf.slider.addEventListener('input', () => updateSliderDisplay(conf.slider, conf.display, conf.num, conf.isFloat, conf.precision));
-                    conf.num.addEventListener('change', () => updateNumberInput(conf.num, conf.slider, conf.display, conf.isFloat, conf.precision)); 
+                    conf.num.addEventListener('change', () => updateNumberInput(conf.num, conf.slider, conf.display, conf.isFloat, conf.precision));
                 });
 
                 controls.addExtraExpenseBtn.addEventListener('click', () => addExtraExpenseRow());
                 
                 // Attach event listeners to ALL buttons with the respective classes
                 controls.computeBtn.forEach(btn => btn.addEventListener('click', handleCompute));
+                // FIX: Corrected event listener for reset buttons
                 controls.resetBtn.forEach(btn => btn.addEventListener('click', resetAllParameters));
+
+                // Add listener for the mobile screenshot button - now shows the modal
+                controls.screenshotBtn.addEventListener('click', takeScreenshotWithSelection);
+                // Add listener for the new full screenshot button
+                controls.fullScreenshotBtn.addEventListener('click', takeFullScreenshot);
+
+                // Add listeners for modal buttons
+                controls.confirmColumnSelectionBtn.addEventListener('click', handleColumnSelectionConfirm);
+                controls.cancelColumnSelectionBtn.addEventListener('click', hideColumnSelectionModal);
+                controls.columnSelectionModalOverlay.addEventListener('click', (e) => {
+                    // Close modal if clicking outside the content
+                    if (e.target === controls.columnSelectionModalOverlay) {
+                        hideColumnSelectionModal();
+                    }
+                });
+
 
                 window.addEventListener('resize', updateLayout); // Call on resize
             }
@@ -1093,16 +1505,13 @@
                         });
                     } else if (key === 'pensionInflationAdjusted') {
                          params[key] = controls[key].checked;
-                    } else if (controls[key] && controls[key].tagName !== 'BUTTON' && controls[key].tagName !== 'DIV') { // Exclude button and div NodeLists/elements
+                    } else if (controls[key] && controls[`${key}Value`] && controls[`${key}Num`]) { // Check for associated display/num elements
                         params[key] = parseFloat(controls[key].value);
-                    } else { 
-                        // Handle cases where the key might not correspond to a single input element
-                        // or is one of the NodeLists (computeBtn, resetBtn) or the new div (tableParameterSummary)
-                        // For NodeLists/Divs, we don't need their value here, they are just for event listeners/display
-                        if (defaultParams.hasOwnProperty(key)) {
-                             params[key] = defaultParams[key];
-                        }
+                    } else if (controls[key] && controls[key].tagName === 'INPUT' && controls[key].type === 'checkbox') { // Handle standalone checkboxes if any
+                         params[key] = controls[key].checked;
                     }
+                    // Note: Elements like computeBtn, resetBtn, resultsChartCanvas, etc. are not parameters
+                    // and are not expected to be in defaultParams or have values gathered here.
                 });
                 return params;
             }
@@ -1114,17 +1523,22 @@
                     return;
                 }
                 // Update summary above the chart
-                updateParameterSummary(currentParams, controls.parameterSummary); 
+                updateParameterSummary(currentParams, controls.parameterSummary);
                 const resultsData = calculateLyingFlatFinances(currentParams);
                 updateChart(resultsData);
                 // updateTable will now also update the summary above the table
-                updateTable(resultsData); 
+                updateTable(resultsData);
+
+                // Scroll to the chart container if not in landscape mode (likely mobile)
+                if (!mainContainer.classList.contains('layout-landscape')) {
+                    controls.chartContainer.scrollIntoView({ behavior: 'smooth' });
+                }
             }
             
             function resetAllParameters() {
                 Object.keys(defaultParams).forEach(key => {
                     if (key === 'extraExpenses') {
-                        controls.extraExpensesContainer.innerHTML = ''; 
+                        controls.extraExpensesContainer.innerHTML = '';
                     } else if (key === 'pensionInflationAdjusted') {
                         controls[key].checked = defaultParams[key];
                     } else if (controls[key] && controls[`${key}Value`] && controls[`${key}Num`]) {
@@ -1147,8 +1561,8 @@
                             case 'inflationRate':
                             case 'savingsReturnRate':
                             case 'salaryGrowthRate':
-                                isFloatParam = true; 
-                                precisionParam = 1; 
+                                isFloatParam = true;
+                                precisionParam = 1;
                                 break;
                             case 'workStartAge':
                             case 'maxAge':
@@ -1166,24 +1580,29 @@
                                 break;
                         }
                         updateSliderDisplay(controls[key], controls[`${key}Value`], controls[`${key}Num`], isFloatParam, precisionParam);
+                    } else if (controls[key] && controls[key].tagName === 'INPUT' && controls[key].type === 'checkbox') { // Handle standalone checkboxes
+                         controls[key].checked = defaultParams[key];
                     }
                 });
                 
                 // Update both summaries with default params
-                updateParameterSummary(defaultParams, controls.parameterSummary); 
+                updateParameterSummary(defaultParams, controls.parameterSummary);
                 
                 // Hide and clear table summary on reset
-                controls.tableParameterSummary.innerHTML = ''; 
+                controls.tableParameterSummary.innerHTML = '';
                 controls.tableParameterSummary.style.display = 'none';
                 
-                initChart(); 
-                controls.resultsTableBody.innerHTML = ''; 
-                controls.resultsTableContainer.style.display = 'none'; 
+                initChart();
+                controls.resultsTableBody.innerHTML = '';
+                controls.resultsTableContainer.style.display = 'none';
+                controls.screenshotBtn.style.display = 'none'; // Hide screenshot button on reset
+                controls.fullScreenshotBtn.style.display = 'none'; // Hide full screenshot button on reset
+                currentResultsData = []; // Clear stored data
             }
 
             // Initialize page
             updateLayout(); // Initial layout check
-            resetAllParameters(); 
+            resetAllParameters();
             initChart();
             setupEventListeners();
         });
