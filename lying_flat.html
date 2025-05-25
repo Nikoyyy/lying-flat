@@ -641,7 +641,7 @@
     <div class="modal-overlay" id="columnSelectionModalOverlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>选择截图列</h3>
+                <h3>选择数据展示列</h3>
             </div>
             <div class="modal-body" id="columnSelectionModalBody">
                 <!-- Checkboxes will be inserted here by JavaScript -->
@@ -1086,7 +1086,7 @@
             // This function now takes the target element as an argument
             function updateParameterSummary(params, targetElement) {
                 const extraExpensesSummary = params.extraExpenses.length > 0
-                    ? params.extraExpenses.map(exp => `${exp.name || '未命名'} (总额 ${exp.totalAmount} 万, 月供 ${exp.monthlyPayment} 万, 从 ${exp.startAge} 岁开始)`).join('; ')
+                    ? params.extraExpenses.map(exp => `${exp.name || '未命名'} (总额 ${exp.totalAmount} 万， 月供 ${exp.monthlyPayment} 万， 从 ${exp.startAge} 岁开始)`).join('; ')
                     : '无';
 
                 const pensionSummary = params.monthlyPension > 0
@@ -1095,26 +1095,26 @@
 
                 const summary = `
                     <p>
-                        当前年龄: <strong>${params.workStartAge}</strong> 岁,
+                        当前年龄: <strong>${params.workStartAge}</strong> 岁，
                         寿命终点: <strong>${params.maxAge}</strong> 岁
                     </p>
                     <p>
-                        平均月支出: <strong>${params.monthlyExpense.toFixed(2)}</strong> 万元,
+                        平均月支出: <strong>${params.monthlyExpense.toFixed(2)}</strong> 万元，
                         通胀率 (逐年): <strong>${params.inflationRate}%</strong>
                     </p>
                     <p>
-                        存款年化收益率: <strong>${params.savingsReturnRate}%</strong>,
+                        存款年化收益率: <strong>${params.savingsReturnRate}%</strong>，
                         当前存款: <strong>${params.initialSavings.toFixed(1)}</strong> 万元
                     </p>
                     <p>
-                        年薪增长率: <strong>${params.salaryGrowthRate}%</strong>,
+                        年薪增长率: <strong>${params.salaryGrowthRate}%</strong>，
                         退休年龄: <strong>${params.retirementAge}</strong> 岁
                     </p>
                     <p>
-                        退休金: ${pensionSummary}.
+                        退休金: ${pensionSummary}
                     </p>
                     <p style="margin-bottom: 0;">
-                        额外支出项: ${extraExpensesSummary}.
+                        额外支出项: ${extraExpensesSummary}
                     </p>
                 `;
                 targetElement.innerHTML = summary;
