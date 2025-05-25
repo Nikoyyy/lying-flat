@@ -1085,17 +1085,21 @@
                 const summary = `
                     <p>
                         当前年龄: <strong>${params.workStartAge}</strong> 岁,
-                        寿命终点: <strong>${params.maxAge}</strong> 岁,
-                        平均月支出: <strong>${params.monthlyExpense.toFixed(2)}</strong> 万元,
+                        寿命终点: <strong>${params.maxAge}</strong> 岁
                     </p>
                     <p>
-                        通胀率: <strong>${params.inflationRate}%</strong>,
+                        平均月支出: <strong>${params.monthlyExpense.toFixed(2)}</strong> 万元,
+                        通胀率 (逐年): <strong>${params.inflationRate}%</strong>
+                    </p>
+                    <p>
                         存款年化收益率: <strong>${params.savingsReturnRate}%</strong>,
-                        当前存款: <strong>${params.initialSavings.toFixed(1)}</strong> 万元.
+                        当前存款: <strong>${params.initialSavings.toFixed(1)}</strong> 万元
                     </p>
                     <p>
                         年薪增长率: <strong>${params.salaryGrowthRate}%</strong>,
-                        退休年龄: <strong>${params.retirementAge}</strong> 岁,
+                        退休年龄: <strong>${params.retirementAge}</strong> 岁
+                    </p>
+                    <p>
                         退休金: <strong>${params.monthlyPension.toFixed(2)}</strong> 万元/月 (${params.pensionInflationAdjusted ? '跟随通胀增长' : '不跟随通胀增长'}).
                     </p>
                     <p style="margin-bottom: 0;">
