@@ -1089,6 +1089,10 @@
                     ? params.extraExpenses.map(exp => `${exp.name || '未命名'} (总额 ${exp.totalAmount} 万, 月供 ${exp.monthlyPayment} 万, 从 ${exp.startAge} 岁开始)`).join('; ')
                     : '无';
 
+                const pensionSummary = params.monthlyPension > 0
+                    ? `<strong>${params.monthlyPension.toFixed(2)}</strong> 万元/月 (${params.pensionInflationAdjusted ? '跟随通胀增长' : '不跟随通胀增长'})`
+                    : '无';
+
                 const summary = `
                     <p>
                         当前年龄: <strong>${params.workStartAge}</strong> 岁,
@@ -1107,7 +1111,7 @@
                         退休年龄: <strong>${params.retirementAge}</strong> 岁
                     </p>
                     <p>
-                        退休金: <strong>${params.monthlyPension.toFixed(2)}</strong> 万元/月 (${params.pensionInflationAdjusted ? '跟随通胀增长' : '不跟随通胀增长'}).
+                        退休金: ${pensionSummary}.
                     </p>
                     <p style="margin-bottom: 0;">
                         额外支出项: ${extraExpensesSummary}.
